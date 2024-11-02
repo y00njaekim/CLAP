@@ -30,6 +30,7 @@ class CLAPWrapper():
     model_name = {
         '2022': 'CLAP_weights_2022.pth',
         '2023': 'CLAP_weights_2023.pth',
+        '505DB528': 'CLAP_weights_2023.pth',
         'clapcap': 'clapcap_weights_2023.pth'
     }
 
