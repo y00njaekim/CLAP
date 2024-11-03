@@ -19,7 +19,7 @@ class CustomAudioTextDataset(Dataset):
         for _, row in tqdm(
             df.iterrows(), total=df.shape[0], desc=f"Loading {self.csv_path} data"
         ):
-            audio_file = row["filename"].split(".")[0] + ".wav"
+            audio_file = row["file_name"].split(".")[0] + ".wav"
             wav_path = os.path.join(self.audio_dir, audio_file)
 
             if os.path.exists(wav_path):
