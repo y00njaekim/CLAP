@@ -27,3 +27,8 @@ torchaudio = { version = "2.1.0", source="cu118"}
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[[tool.poetry.source]]
+name = "cu118"
+url = "https://download.pytorch.org/whl/cu118"
+priority = "explicit"
