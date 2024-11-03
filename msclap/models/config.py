@@ -50,7 +50,7 @@ enable_repeat_mode = False # repeat the spectrogram / reshape the spectrogram
 enable_tscam = True # enbale the token-semantic layer
 
 # for signal processing
-sample_rate = 32000 # 16000 for scv2, 32000 for audioset and esc-50
+sample_rate = 44100 # 16000 for scv2, 32000 for audioset and esc-50
 clip_samples = sample_rate * 10 # audio_set 10-sec clip
 window_size = 1024
 hop_size = 320 # 160 for scv2, 320 for audioset and esc-50
