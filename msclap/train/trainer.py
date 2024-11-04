@@ -2,7 +2,7 @@ import torch
 import wandb
 from utils import process_batch
 import torch.nn.functional as F
-
+from config import *
 
 class CLAPTrainer:
     def __init__(self, model, optimizer, scaler, device):
@@ -96,7 +96,7 @@ class CLAPTrainer:
             if epoch == num_epochs - 1:
                 torch.save(
                     self.model.state_dict(),
-                    f"/home/CLAP/data/params/model_epoch_{epoch+1}_{wandb.run.name}.pth",
+                    f"{DATA_DIR}/params/model_epoch_{epoch+1}_{wandb.run.name}.pth",
                 )
 
         return self.model
