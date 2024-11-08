@@ -3,6 +3,7 @@ import wandb
 from utils import process_batch
 import torch.nn.functional as F
 from config import *
+import gc
 
 class CLAPTrainer:
     def __init__(self, model, optimizer, scaler, device):
@@ -14,24 +15,30 @@ class CLAPTrainer:
     def train_epoch(self, clap_wrapper, dataloader):
         total_loss = 0
         torch.cuda.empty_cache()
-
-        for batch in dataloader:
-            loss, _, _ = process_batch(
-                clap_wrapper,
-                self.device,
-                batch,
-            )
-
-            self.scaler.scale(loss).backward()
-
-            self.scaler.unscale_(self.optimizer)
-            torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=1.0)
-            self.scaler.step(self.optimizer)
-            self.scaler.update()
-            self.optimizer.zero_grad()
-
-            total_loss += loss.item()
-
+        gc.collect()
+        
+        for batch_idx, batch in enumerate(dataloader):
+            try:
+                loss, _, _ = process_batch(
+                    clap_wrapper,
+                    self.device,
+                    batch,
+                )
+                
+                self.scaler.scale(loss).backward()
+                
+                self.scaler.unscale_(self.optimizer)
+                torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=1.0)
+                self.scaler.step(self.optimizer)
+                self.scaler.update()
+                self.optimizer.zero_grad()
+                
+                total_loss += loss.item()
+                
+            except RuntimeError as e:
+                print(f"배치 {batch_idx}에서 오류 발생: {str(e)}")
+                continue
+        
         avg_loss = total_loss / len(dataloader)
         return avg_loss
 
@@ -113,7 +120,7 @@ class CLAPTrainer:
                 }
             )
 
-            if epoch == num_epochs - 1 or epoch % 5 == 0:
+            if epoch == num_epochs - 1 or epoch % 3 == 0:
                 torch.save(
                     self.model.state_dict(),
                     f"{DATA_DIR}/params/model_epoch_{epoch+1}_{wandb.run.name}.pth",
