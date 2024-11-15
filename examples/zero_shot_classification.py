@@ -17,7 +17,7 @@ prompt = 'this is the sound of '
 y = [prompt + x for x in dataset.classes]
 
 # Load and initialize CLAP
-clap_model = CLAP(version = '2023', use_cuda=False)
+clap_model = CLAP(version = '505DB528', use_cuda=False)
 
 # Computing text embeddings
 text_embeddings = clap_model.get_text_embeddings(y)
