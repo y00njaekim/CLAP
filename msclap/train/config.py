@@ -1,7 +1,7 @@
 PROJECT_NAME = "subtitle-3"
 VALIDATION_BATCH_SIZE = 128
 
-DATA_DIR = "/home/naive_k_clap/CLAP/data"
+DATA_DIR = "/home/CLAP/data"
 AUDIO_FILES_DIR = f"{DATA_DIR}/audio_files"
 TRAIN_CSV = f"{DATA_DIR}/train.csv"
 VALIDATION_CSV = f"{DATA_DIR}/validation.csv"

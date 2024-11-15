@@ -1,6 +1,8 @@
 import torch
 import wandb
 from utils import process_batch
+import torch.nn.functional as F
+
 
 class CLAPTrainer:
     def __init__(self, model, optimizer, scaler, device):
@@ -94,7 +96,7 @@ class CLAPTrainer:
             if epoch == num_epochs - 1:
                 torch.save(
                     self.model.state_dict(),
-                    f"/home/rag/para-sentence-rag/src/embedding_models/msclap/params/model_epoch_{epoch+1}_{wandb.run.name}_{clap_wrapper.args.text_model}-{clap_wrapper.args.audioenc_name}.pth",
+                    f"/home/CLAP/data/params/model_epoch_{epoch+1}_{wandb.run.name}.pth",
                 )
 
         return self.model
