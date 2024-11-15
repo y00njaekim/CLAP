@@ -95,7 +95,15 @@ class CLAPTrainer:
         accuracy = total_correct / total_samples
         return avg_loss, accuracy
 
+    def load_model(self, model_path):
+        self.model.load_state_dict(torch.load(model_path))
+        print(f"모델이 {model_path}에서 로드되었습니다.")
+
     def train(self, clap_wrapper, train_dataloader, validation_dataloader, 
+              num_epochs, model_path=None):
+        # 모델 경로가 제공되면 로드
+        if model_path:
+            self.load_model(model_path)
         
         self.model.train()
 

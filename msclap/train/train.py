@@ -40,6 +40,12 @@ def parse_args():
         default=DEFAULT_CONFIG_VERSION,
         help="Configuration version",
     )
+    parser.add_argument(
+        "--model_path",
+        type=str,
+        default=None,
+        help="Model path",
+    )
     return parser.parse_args()
 
 
@@ -54,6 +60,7 @@ def get_config(args):
         "weight_decay": args.weight_decay,
         "is_augmented": args.is_augmented,
         "config_version": args.config_version,
+        "model_path": args.model_path,
     }
 
 
@@ -107,14 +114,15 @@ def main():
     training_components = setup_training(args, use_cuda)
     device, clap_wrapper, clap_model, train_dataloader, validation_dataloader, optimizer, scaler = training_components
     
-    trainer = CLAPTrainer(clap_model, optimizer, scaler, device)
+    model_path = args.model_path if hasattr(args, 'model_path') else None
     
     with wandb.init(project=PROJECT_NAME, config=get_config(args)):
         trainer.train(
             clap_wrapper,
             train_dataloader,
             validation_dataloader,
-            num_epochs=args.num_epochs
+            num_epochs=args.num_epochs,
+            model_path=model_path
         )
     wandb.finish()
 
