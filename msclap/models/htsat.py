@@ -625,7 +625,7 @@ class HTSAT_Swin_Transformer(nn.Module):
         center = True
         pad_mode = 'reflect'
         ref = 1.0
-        amin = 1e-10
+        amin = 1e-5
         top_db = None
         self.interpolate_ratio = 32     # Downsampled ratio
         # Spectrogram extractor
@@ -847,6 +847,7 @@ class HTSAT_Swin_Transformer(nn.Module):
 
     def forward(self, x: torch.Tensor, mixup_lambda = None, infer_mode = False):# out_feat_keys: List[str] = None):
         x = self.spectrogram_extractor(x)   # (batch_size, 1, time_steps, freq_bins)
+        x = torch.clamp(x, min=1e-5, max=50000)
         x = self.logmel_extractor(x)    # (batch_size, 1, time_steps, mel_bins)
         
         
