@@ -29,6 +29,8 @@ class CustomAudioTextDataset(Dataset):
                 data.append({"audio_path": wav_path, "transcript": row["text"]})
             else:
                 print(f"Warning: Audio file not found: {wav_path} (real path: {real_path})")
+                
+        print(f"Loaded {len(data)} audio files, {len(df) - len(data)} audio files not found")
 
         return data
 
