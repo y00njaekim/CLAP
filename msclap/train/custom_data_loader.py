@@ -21,11 +21,14 @@ class CustomAudioTextDataset(Dataset):
         ):
             audio_file = row["file_name"].split(".")[0] + ".wav"
             wav_path = os.path.join(self.audio_dir, audio_file)
-
-            if os.path.exists(wav_path):
+            
+            # symbolic link인 경우도 처리
+            real_path = os.path.realpath(wav_path)
+            
+            if os.path.exists(real_path):
                 data.append({"audio_path": wav_path, "transcript": row["text"]})
             else:
-                print(f"Warning: Audio file not found: {wav_path}")
+                print(f"Warning: Audio file not found: {wav_path} (real path: {real_path})")
 
         return data
 
