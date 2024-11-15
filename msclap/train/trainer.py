@@ -11,6 +11,7 @@ class CLAPTrainer:
         self.optimizer = optimizer
         self.scaler = scaler
         self.device = device
+        self.scheduler = scheduler
 
     def train_epoch(self, clap_wrapper, dataloader):
         # 학습 모드로 설정
@@ -30,7 +31,7 @@ class CLAPTrainer:
                 self.scaler.scale(loss).backward()
                 
                 self.scaler.unscale_(self.optimizer)
-                torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=1.0)
+                torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=5.0)
                 self.scaler.step(self.optimizer)
                 self.scaler.update()
                 self.optimizer.zero_grad()
@@ -117,6 +118,8 @@ class CLAPTrainer:
                 clap_wrapper,
                 validation_dataloader
             )
+
+            self.scheduler.step(val_loss)
 
             print(
                 f"Epoch {epoch+1}/{num_epochs}, Train Loss: {train_loss}, Val Loss: {val_loss}, Val Accuracy: {val_accuracy:.4f}"

@@ -2,6 +2,7 @@ import argparse
 import torch
 from torch.utils.data import DataLoader
 from torch.optim import AdamW
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 import wandb
 
 from msclap.CLAPWrapper import CLAPWrapper
@@ -96,6 +97,8 @@ def setup_training(args, use_cuda):
     )
     scaler = torch.cuda.amp.GradScaler()
 
+    scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=10, verbose=True)
+
     return (
         device,
         clap_wrapper,
@@ -104,6 +107,7 @@ def setup_training(args, use_cuda):
         validation_dataloader,
         optimizer,
         scaler,
+        scheduler,
     )
 
 
@@ -112,7 +116,9 @@ def main():
     use_cuda = torch.cuda.is_available()
     
     training_components = setup_training(args, use_cuda)
-    device, clap_wrapper, clap_model, train_dataloader, validation_dataloader, optimizer, scaler = training_components
+    device, clap_wrapper, clap_model, train_dataloader, validation_dataloader, optimizer, scaler, scheduler = training_components
+    
+    trainer = CLAPTrainer(clap_model, optimizer, scaler, device, scheduler)
     
     model_path = args.model_path if hasattr(args, 'model_path') else None
     

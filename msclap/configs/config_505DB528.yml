@@ -8,7 +8,7 @@ freeze_text_encoder_weights: True
 audioenc_name: 'HTSAT'
 out_emb: 768
 sampling_rate: 44100
-duration: 7
+duration: 5
 fmin: 50
 fmax: 8000 #14000 
 n_fft: 1024 # 1028 
