@@ -52,7 +52,6 @@ def get_config(args):
         "batch_size": args.batch_size,
         "optimizer": "AdamW",
         "weight_decay": args.weight_decay,
-        "pad_token": args.pad_token,
         "is_augmented": args.is_augmented,
         "config_version": args.config_version,
     }
@@ -115,8 +114,7 @@ def main():
             clap_wrapper,
             train_dataloader,
             validation_dataloader,
-            num_epochs=args.num_epochs,
-            args=args
+            num_epochs=args.num_epochs
         )
     wandb.finish()
 
