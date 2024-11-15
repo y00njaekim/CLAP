@@ -266,12 +266,13 @@ class CLAPWrapper():
         r"""Load list of class labels and return tokenized text"""
         tokenized_texts = []
         for ttext in text_queries:
+            ttext = str(ttext)
             if 'skt/kogpt2-base-v2' in self.args.text_model:
                 ttext = '<s> ' + ttext + ' </s>'
             elif 'gpt' in self.args.text_model:
                 ttext = ttext + ' <|endoftext|>'
             tok = self.tokenizer.encode_plus(
-                text=ttext, add_special_tokens=True, max_length=self.args.text_len, padding='max_length', return_tensors="pt")
+                text=ttext, add_special_tokens=True, max_length=self.args.text_len, padding='max_length', return_tensors="pt", truncation=True) # TODO: truncation 중복될 수도 있음. 이전에 이미 trunctation 했을 수도 있음. truncation 으로 잘려나가는 게 무엇인지, 이 이전에 잘려나가는 대목은 없는지 점검.
             for key in self.token_keys:
                 tok[key] = tok[key].reshape(-1).cuda() if self.use_cuda and torch.cuda.is_available() else tok[key].reshape(-1)
             tokenized_texts.append(tok)
