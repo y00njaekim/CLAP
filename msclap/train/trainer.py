@@ -40,27 +40,47 @@ class CLAPTrainer:
         total_loss = 0
         total_correct = 0
         total_samples = 0
-
+        
+        base_classes = ["개", "수탉", "돼지", "소", "개구리", "고양이", "암탉", "곤충", "양", 
+                       "까마귀", "비", "바다 파도", "타오르는 불", "귀뚜라미", "새 지저귐", 
+                       "물방울", "바람", "물을 붓는 소리", "변기 물 내림", "뇌우", "우는 아기", 
+                       "재채기", "박수", "숨소리", "기침", "발소리", "웃음소리", "양치질", 
+                       "코골이", "마시기, 홀짝임", "문 두드림", "마우스 클릭", "키보드 타이핑", 
+                       "문, 나무 삐걱임", "캔 열기", "세탁기", "청소기", "알람 시계", 
+                       "시계 초침 소리", "유리 깨짐", "헬리콥터", "전기톱", "사이렌", 
+                       "자동차 경적", "엔진", "기차", "교회 종소리", "비행기", "불꽃놀이", "톱질"]
+        
+        fixed_text_embeddings = None
+        
         with torch.no_grad():
-            for batch in dataloader:
-                loss, audio_embeddings, text_embeddings = process_batch(
+            for batch_idx, batch in enumerate(dataloader):
+                loss, audio_embeddings, _ = process_batch(
                     clap_wrapper,
                     self.device,
                     batch,
                 )
                 total_loss += loss.item()
-
-                # Accuracy calculation
+                
+                # 첫 번째 배치에서 텍스트 임베딩을 계산하고 저장
+                if batch_idx == 0:
+                    # 각 클래스를 문장으로 변환
+                    sound_prompts = [f"이것은 {cls} 소리입니다" for cls in base_classes]
+                    fixed_text_embeddings = clap_wrapper.get_text_embeddings(sound_prompts)
+                
+                # Accuracy 계산
                 batch_size = audio_embeddings.shape[0]
                 for i in range(batch_size):
                     sample_audio_embedding = audio_embeddings[i].unsqueeze(0)
                     similarities = F.cosine_similarity(
-                        sample_audio_embedding, text_embeddings
+                        sample_audio_embedding, 
+                        fixed_text_embeddings
                     )
                     predicted_index = similarities.argmax().item()
-                    if predicted_index == i:
+                    predicted_class = base_classes[predicted_index]
+                    true_label = batch["transcript"][i]
+                    if predicted_class == true_label:
                         total_correct += 1
-                total_samples += batch_size
+                    total_samples += 1
 
         avg_loss = total_loss / len(dataloader)
         accuracy = total_correct / total_samples
@@ -93,7 +113,7 @@ class CLAPTrainer:
                 }
             )
 
-            if epoch == num_epochs - 1:
+            if epoch == num_epochs - 1 or epoch % 5 == 0:
                 torch.save(
                     self.model.state_dict(),
                     f"{DATA_DIR}/params/model_epoch_{epoch+1}_{wandb.run.name}.pth",
