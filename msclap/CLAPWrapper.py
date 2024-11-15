@@ -114,7 +114,9 @@ class CLAPWrapper():
 
         clap.eval()  # set clap in eval mode
         tokenizer = AutoTokenizer.from_pretrained(args.text_model)
-        if 'gpt' in args.text_model:
+        if 'skt/kogpt2-base-v2' in args.text_model:
+            tokenizer.add_special_tokens({'pad_token': '<pad>'})
+        elif 'gpt' in args.text_model:
             tokenizer.add_special_tokens({'pad_token': '!'})
 
         if self.use_cuda and torch.cuda.is_available():
@@ -263,7 +265,9 @@ class CLAPWrapper():
         r"""Load list of class labels and return tokenized text"""
         tokenized_texts = []
         for ttext in text_queries:
-            if 'gpt' in self.args.text_model:
+            if 'skt/kogpt2-base-v2' in self.args.text_model:
+                ttext = '<s> ' + ttext + ' </s>'
+            elif 'gpt' in self.args.text_model:
                 ttext = ttext + ' <|endoftext|>'
             tok = self.tokenizer.encode_plus(
                 text=ttext, add_special_tokens=True, max_length=self.args.text_len, padding='max_length', return_tensors="pt")
