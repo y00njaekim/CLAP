@@ -160,7 +160,7 @@ class CLAPWrapper():
         model_state_dict = torch.load(self.model_fp, map_location=torch.device('cpu'))['model']
         clapcap.load_state_dict(model_state_dict, strict=False)
 
-        clapcap.eval()  # set clap in eval mode
+        # clapcap.eval()  # set clap in eval mode
         tokenizer = AutoTokenizer.from_pretrained(args.text_model)
         if 'gpt' in args.text_model:
             tokenizer.add_special_tokens({'pad_token': '!'})

@@ -13,6 +13,8 @@ class CLAPTrainer:
         self.device = device
 
     def train_epoch(self, clap_wrapper, dataloader):
+        # 학습 모드로 설정
+        self.model.train()
         total_loss = 0
         torch.cuda.empty_cache()
         gc.collect()
@@ -94,7 +96,8 @@ class CLAPTrainer:
         return avg_loss, accuracy
 
     def train(self, clap_wrapper, train_dataloader, validation_dataloader, 
-              num_epochs):
+        
+        self.model.train()
 
         for epoch in range(num_epochs):
             train_loss = self.train_epoch(
