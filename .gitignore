@@ -357,3 +357,7 @@ root_path/
 
 
 */**/*.mp3
+wandb/
+data/*.csv
+data/audio_files/*.wav
+data/audio_files/*.mp3
